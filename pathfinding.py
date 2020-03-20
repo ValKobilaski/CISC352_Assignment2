@@ -1,27 +1,21 @@
 import heapq
 
-tempBoard = ['XXXXXXXXXX',
-			 'X___XX_X_X',
-			 'X_X__X___X',
-			 'XSXX___X_X',
-			 'X_X__X___X',
-			 'X___XX_X_X',
-			 'X_X__X_X_X',
-			 'X__G_X___X',
-			 'XXXXXXXXXX']
-tempBoard = list(map(lambda u: [x for x in u], tempBoard))
-
 
 def read_grid(file_name):
 	inputGrid = []
+	inputGrid.append([])
 	with open(file_name, 'r') as inputF:
+		boardCount=0
 		for line in inputF.read().splitlines():
-			inputGrid.append(line)
+			inputGrid[boardCount].append(line)
+			if line == "":
+				boardCount+=1
+				inputGrid.append([])
 	return inputGrid
 
 
 def Greedy_Search(grid, diagonal):
-	pass
+	return A_Star(grid,diagonal,True)
 
 
 def get_neighbors(graph, currentX, currentY, diagonals=False):
@@ -54,7 +48,7 @@ def get_neighbors(graph, currentX, currentY, diagonals=False):
 	return neighbors
 
 
-def A_Star(grid, diagonal):
+def A_Star(grid, diagonal, greedy=False):
 
 	q = []
 	came_from = {}
@@ -75,22 +69,21 @@ def A_Star(grid, diagonal):
 	start_node = ((chebyshev((startX, startY), (goalX, goalY)) if diagonal else manhattan(
 		(startX, startY), (goalX, goalY))), startX, startY)
 	came_from[start_node] = None
-	cost_so_far[start_node] = 0
+	cost_so_far[(start_node[1], start_node[2])] = 0
 
 	heapq.heappush(q, start_node)
-
 	while len(q) > 0:
+		#current is priority, x, y
 		current = heapq.heappop(q)
 		if grid[current[1]][current[2]] == 'G':
 			break
-
+		#Node is x and y without priority
 		for node in get_neighbors(grid, current[1], current[2], diagonal):
-			new_cost = cost_so_far[current] + 1
-			if node not in cost_so_far:
-				priority = new_cost + \
-					(chebyshev(current, node) if diagonal else (
-						manhattan((goalX, goalY), node)))
-				cost_so_far[(priority, node[0], node[1])] = new_cost
+			#If it's greedy this will just always be 0
+			new_cost = cost_so_far[current[1], current[2]] + 1 if not greedy else 0
+			if not node in cost_so_far:
+				priority = new_cost + (chebyshev(node, (goalX, goalY)) if diagonal else (manhattan(node, (goalX, goalY))))
+				cost_so_far[(node[0], node[1])] = new_cost
 				heapq.heappush(q, (priority, node[0], node[1]))
 				came_from[(priority, node[0], node[1])] = current
 
@@ -115,24 +108,22 @@ def chebyshev(point_a, point_b):
 
 
 def main():
-	grid = read_grid('pathfinding_a.txt')
-	for i in A_Star(grid, False):
-		print(i)
-
-	print('\n')
-
-	grid = read_grid('pathfinding_a.txt')
-	for i in A_Star(grid, True):
-		print(i)
-
-	'''
-	grid = read_grid("pathfinding_a.txt")
-	Greedy_Search(grid, False)
-	A_Star(grid, False)
-
-	grid = read_grid("pathfinding_b.txt")
-	Greedy_Search(grid, True)
-	A_Star(grid, True)'''
+	grids_a = read_grid('pathfinding_a.txt')
+	with open('pathfinding_a_out.txt', 'w+') as out:
+		for grid in grids_a:
+			#If statements just to make the printing more legible
+			out.write("\nGreedy" if grids_a[0] != grid else 'Greedy')
+			out.writelines(map((lambda x: "\n" + x), Greedy_Search(grid, False)))
+			out.write("\nA*" if grids_a[0] != grid else 'A*')
+			out.writelines(map((lambda x: "\n" + x), A_Star(grid, False)))
+	grids_b = read_grid('pathfinding_b.txt')
+	with open('pathfinding_b_out.txt', 'w+') as out:
+		for grid in grids_b:
+			#If statements just to make the printing more legible
+			out.write("\nGreedy" if grids_b[0] != grid else 'Greedy')
+			out.writelines(map((lambda x: x + "\n"), Greedy_Search(grid, True)))
+			out.write("\nA*" if grids_b[0] != grid else 'A*')
+			out.writelines(map((lambda x: x + "\n"), A_Star(grid, True)))
 
 
 main()
