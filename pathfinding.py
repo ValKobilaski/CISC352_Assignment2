@@ -112,17 +112,17 @@ def main():
 	with open('pathfinding_a_out.txt', 'w+') as out:
 		for grid in grids_a:
 			#If statements just to make the printing more legible
-			out.write("\nGreedy" if grids_a[0] != grid else 'Greedy')
+			out.write("\nGreedy\n" if grids_a[0] != grid else 'Greedy\n')
 			out.writelines(map((lambda x: "\n" + x), Greedy_Search(grid, False)))
-			out.write("\nA*" if grids_a[0] != grid else 'A*')
+			out.write("\nA*\n" if grids_a[0] != grid else 'A*\n')
 			out.writelines(map((lambda x: "\n" + x), A_Star(grid, False)))
 	grids_b = read_grid('pathfinding_b.txt')
 	with open('pathfinding_b_out.txt', 'w+') as out:
 		for grid in grids_b:
 			#If statements just to make the printing more legible
-			out.write("\nGreedy" if grids_b[0] != grid else 'Greedy')
+			out.write("\nGreedy\n" if grids_b[0] != grid else 'Greedy\n')
 			out.writelines(map((lambda x: x + "\n"), Greedy_Search(grid, True)))
-			out.write("\nA*" if grids_b[0] != grid else 'A*')
+			out.write("\nA*\n" if grids_b[0] != grid else 'A*\n')
 			out.writelines(map((lambda x: x + "\n"), A_Star(grid, True)))
 
 
