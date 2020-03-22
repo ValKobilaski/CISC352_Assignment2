@@ -84,7 +84,9 @@ def A_Star(grid, diagonal, greedy=False):
 				cost_so_far[(node[0], node[1])] = new_cost
 				heapq.heappush(q, (priority, node[0], node[1]))
 				came_from[(node[0], node[1])] = (current[1], current[2])
-
+	#If it cannot find a path don't modify the grid
+	if (current[1],current[2]) != goal:
+		return grid
 	temp = came_from[(current[1], current[2])]
 	route = [temp]
 	while came_from[temp] is not None:
