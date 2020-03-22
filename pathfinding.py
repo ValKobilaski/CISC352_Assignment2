@@ -63,7 +63,7 @@ def A_Star(grid, diagonal, greedy=False):
 	priority = heuristic(start, goal, diagonal)
 	start_node = (priority, start[0], start[1])
 	
-	came_from[start_node] = None
+	came_from[(start_node[1], start_node[2])] = None
 	cost_so_far[(start_node[1], start_node[2])] = 0
 
 	heapq.heappush(q, start_node)
@@ -83,16 +83,16 @@ def A_Star(grid, diagonal, greedy=False):
 				priority = new_cost + heuristic(node, goal, diagonal)
 				cost_so_far[(node[0], node[1])] = new_cost
 				heapq.heappush(q, (priority, node[0], node[1]))
-				came_from[(priority, node[0], node[1])] = current
+				came_from[(node[0], node[1])] = (current[1], current[2])
 
-	temp = came_from[current]
+	temp = came_from[(current[1], current[2])]
 	route = [temp]
 	while came_from[temp] is not None:
 		route.append(came_from[temp])
-		grid[temp[1]] = grid[temp[1]][:temp[2]] + 'P' + grid[temp[1]][temp[2]+1:]
+		grid[temp[0]] = grid[temp[0]][:temp[1]] + 'P' + grid[temp[0]][temp[1]+1:]
 		temp = came_from[temp]
 
-	grid[route[-1][1]] = grid[route[-1][1]][:route[-1][2]] + 'S' + grid[route[-1][1]][route[-1][2]+1:]
+	grid[route[-1][0]] = grid[route[-1][0]][:route[-1][1]] + 'S' + grid[route[-1][0]][route[-1][1]+1:]
 	return grid
 
 
